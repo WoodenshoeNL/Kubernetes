@@ -2,6 +2,7 @@
 
 ACR_NAME='woodacr'
 group='kubernetes'
+region='westeurope'
 
 ACR_PWD=`az acr credential show -n $ACR_NAME -g $group --query "passwords[0].value" -o tsv`
 
