@@ -23,25 +23,43 @@ az network vnet create \
     --subnet-prefix $subNetRange
 
 
+#Create PIP's
+
+az network public-ip create \
+    --resource-group $ResourceGroup \
+    -n MasterPip
+
+az network public-ip create \
+    --resource-group $ResourceGroup \
+    -n Node1Pip
+
+az network public-ip create \
+    --resource-group $ResourceGroup \
+    -n Node2Pip
+
+
 #Create NIC's
 
 az network nic create \
     --resource-group $ResourceGroup \
     --vnet-name $vNet \
     --subnet $subNet \
-    -n MasterNic
+    -n MasterNic \
+    --public-ip-address MasterPip
 
 az network nic create \
     --resource-group $ResourceGroup \
     --vnet-name $vNet \
     --subnet $subNet \
-    -n Node1Nic
+    -n Node1Nic \
+    --public-ip-address Node1Pip
 
 az network nic create \
     --resource-group $ResourceGroup \
     --vnet-name $vNet \
     --subnet $subNet \
-    -n Node2Nic
+    -n Node2Nic \
+    --public-ip-address Node2Pip
 
 
 #Create NSG
@@ -82,7 +100,6 @@ az vm create \
     --generate-ssh-keys \
     --size Standard_A2 \
     --nics MasterNic
-
 
 
 
