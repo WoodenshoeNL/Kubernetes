@@ -70,20 +70,6 @@ az network nsg rule create \
     --source-port-range '*' \
     --priority 1000
 
-#Create Kubernetes-Api NSG rule
-az network nsg rule create \
-    --resource-group $ResourceGroup \
-    -n kubernetes-allow-api-server \
-    --access allow \
-    --destination-address-prefix '*' \
-    --destination-port-range 6443 \
-    --direction inbound \
-    --nsg-name kubernetes-nsg \
-    --protocol tcp \
-    --source-address-prefix '*' \
-    --source-port-range '*' \
-    --priority 1001
-
 
 
 #Create Master Node:
