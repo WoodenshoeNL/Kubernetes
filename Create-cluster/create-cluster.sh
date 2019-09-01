@@ -118,7 +118,7 @@ az vm create \
 
 az vm create \
     --resource-group $ResourceGroup \
-    --name kubemaster01 \
+    --name kubenode02 \
     --image UbuntuLTS \
     --admin-username michel \
     --generate-ssh-keys \
