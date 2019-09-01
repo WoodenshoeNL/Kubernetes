@@ -102,4 +102,25 @@ az vm create \
     --nics MasterNic
 
 
+#Create Node1
 
+az vm create \
+    --resource-group $ResourceGroup \
+    --name kubenode01 \
+    --image UbuntuLTS \
+    --admin-username michel \
+    --generate-ssh-keys \
+    --size Standard_A2 \
+    --nics Node1Nic
+
+
+#Create Node2
+
+az vm create \
+    --resource-group $ResourceGroup \
+    --name kubemaster01 \
+    --image UbuntuLTS \
+    --admin-username michel \
+    --generate-ssh-keys \
+    --size Standard_A2 \
+    --nics Node2Nic
