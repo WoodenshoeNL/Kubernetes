@@ -70,8 +70,8 @@ az network nsg create \
 #Attache NSG to Subnet
 az network vnet subnet update \
     --resource-group $ResourceGroup \
-    -n kubernetes-subnet \
-    --vnet-name kubernetes-vnet \
+    --subnet $subNet \
+    --vnet-name $vNet \
     --network-security-group kubernetes-nsg
 
 #Create SSH NSG rule
