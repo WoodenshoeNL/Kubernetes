@@ -1,7 +1,10 @@
 #!/bin/bash
 
 ACR_NAME="woodregistry"
-mongoIp="192.168.1.2"
+#mongoIp="192.168.1.2"
+
+
+#Deploy Mongodb Deployment
 
 cat > ./mongo.deploy.yaml << EOL
 kind: Deployment
@@ -25,8 +28,10 @@ spec:
         - containerPort: 27017
 EOL
 
-
 kubectl apply -f mongo.deploy.yaml
+
+
+#Deploy Data-api Deployment
 
 cat > ./data-api.deploy.yaml << EOL
 kind: Deployment
@@ -50,10 +55,104 @@ spec:
         - containerPort: 4000
         env:
         - name: MONGO_CONNSTR
-          value: mongodb://$mongoIp
+          value: mongodb://mongodb-svc.default
       imagePullSecrets:
       - name: acr-auth
 EOL
 
 kubectl apply -f data-api.deploy.yaml
+
+
+#Deploy Mongodb Service
+
+cat > ./mongo.svc.yaml << EOL
+kind: Service
+apiVersion: v1
+metadata:
+  name: mongodb-svc
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+  selector:
+    app: mongodb
+EOL
+
+kubectl apply -f mongo.svc.yaml
+
+
+#Deploy data-api Service
+
+cat > ./data-api.svc.yaml << EOL
+kind: Service
+apiVersion: v1
+metadata:
+  name: data-api-svc
+spec:
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 4000
+    nodePort: 30000
+  selector:
+    app: data-api
+EOL
+
+kubectl apply -f data-api.svc.yaml
+
+
+#Deploy Frondend Service
+
+cat > ./frontend.svc.yaml << EOL
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+    nodePort: 30001
+  selector:
+    app: frontend
+EOL
+
+kubectl apply -f frontend.svc.yaml
+
+
+#Deploy Frontend Deployment
+
+cat > ./frontend.deploy.yaml << EOL
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend-pod
+        image: $ACR_NAME.azurecr.io/smilr/frontend
+        ports:
+        - containerPort: 3000
+        env:
+        - name: API_ENDPOINT
+          value: http://10.11.0.5:300000/api
+      imagePullSecrets:
+      - name: acr-auth
+EOL
+
+kubectl apply -f frontend.deploy.yaml
 
