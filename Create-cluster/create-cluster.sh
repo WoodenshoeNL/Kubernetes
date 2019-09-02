@@ -37,29 +37,13 @@ az network public-ip create \
     --resource-group $ResourceGroup \
     -n Node2Pip
 
-
-#Create NIC's
-
-az network nic create \
+az network public-ip create \
     --resource-group $ResourceGroup \
-    --vnet-name $vNet \
-    --subnet $subNet \
-    -n MasterNic \
-    --public-ip-address MasterPip
+    -n DataLoadbalancerPip
 
-az network nic create \
+az network public-ip create \
     --resource-group $ResourceGroup \
-    --vnet-name $vNet \
-    --subnet $subNet \
-    -n Node1Nic \
-    --public-ip-address Node1Pip
-
-az network nic create \
-    --resource-group $ResourceGroup \
-    --vnet-name $vNet \
-    --subnet $subNet \
-    -n Node2Nic \
-    --public-ip-address Node2Pip
+    -n FrontendLoadbalancerPip
 
 
 #Create NSG
@@ -88,6 +72,63 @@ az network nsg rule create \
     --source-port-range '*' \
     --priority 1000
 
+
+#Create Data Api Loadbalancer
+
+az network lb create \
+    --resource-group $ResourceGroup \
+    --name DataLoadBalancer \
+    --public-ip-address DataLoadbalancerPip \
+    --frontend-ip-name DataFrontEndPool \
+    --backend-pool-name DataBackEndPool
+
+az network lb probe create \
+    --resource-group $ResourceGroup \
+    --lb-name DataLoadBalancer \
+    --name DataHealthProbe \
+    --protocol tcp \
+    --port 30000
+
+az network lb rule create \
+    --resource-group $ResourceGroup \
+    --lb-name DataLoadBalancer \
+    --name dataHTTPRule \
+    --protocol tcp \
+    --frontend-port 80 \
+    --backend-port 3000 \
+    --frontend-ip-name DataFrontEndPool \
+    --backend-pool-name DataBackEndPool \
+    --probe-name DataHealthProbe
+
+
+#Create NIC's
+
+az network nic create \
+    --resource-group $ResourceGroup \
+    --vnet-name $vNet \
+    --subnet $subNet \
+    -n MasterNic \
+    --public-ip-address MasterPip \
+    --lb-name DataLoadBalancer \
+    --lb-address-pools DataBackEndPool
+
+az network nic create \
+    --resource-group $ResourceGroup \
+    --vnet-name $vNet \
+    --subnet $subNet \
+    -n Node1Nic \
+    --public-ip-address Node1Pip \
+    --lb-name DataLoadBalancer \
+    --lb-address-pools DataBackEndPool
+
+az network nic create \
+    --resource-group $ResourceGroup \
+    --vnet-name $vNet \
+    --subnet $subNet \
+    -n Node2Nic \
+    --public-ip-address Node2Pip \
+    --lb-name DataLoadBalancer \
+    --lb-address-pools DataBackEndPool
 
 
 #Create Master Node:
