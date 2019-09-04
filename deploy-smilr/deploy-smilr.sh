@@ -149,10 +149,48 @@ spec:
         - containerPort: 3000
         env:
         - name: API_ENDPOINT
-          value: http://10.11.0.5:300000/api
+          value: http://13.93.5.202:30000/api
       imagePullSecrets:
       - name: acr-auth
 EOL
 
 kubectl apply -f frontend.deploy.yaml
+
+
+#Create Mongodb statefull
+
+cat > ./mongo.stateful.yaml << EOL
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: mongodb
+spec:
+  serviceName: mongodb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb-pod
+        image: mongo:3.4-jessie
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+          - name: mongo-vol
+            mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-vol
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: default
+        resources:
+          requests:
+            storage: 500M
+EOL
 
