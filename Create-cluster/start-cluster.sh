@@ -21,4 +21,4 @@ NODE="kubenode02"
 az vm start \
     --resource-group $ResourceGroup \
     --name $NODE \
-    --no-wait
+
