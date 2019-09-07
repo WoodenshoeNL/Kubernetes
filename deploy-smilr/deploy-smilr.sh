@@ -149,7 +149,7 @@ spec:
         - containerPort: 3000
         env:
         - name: API_ENDPOINT
-          value: http://13.93.5.202:30000/api
+          value: http://wood-kube-lb.westeurope.cloudapp.azure.com:8080/api
       imagePullSecrets:
       - name: acr-auth
 EOL
