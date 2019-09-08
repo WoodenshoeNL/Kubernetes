@@ -28,7 +28,7 @@ spec:
         - containerPort: 27017
 EOL
 
-kubectl apply -f mongo.deploy.yaml
+#kubectl apply -f mongo.deploy.yaml
 
 
 #Deploy Data-api Deployment
@@ -104,7 +104,7 @@ EOL
 kubectl apply -f data-api.svc.yaml
 
 
-#Deploy Frondend Service
+#Deploy Frontend Service
 
 cat > ./frontend.svc.yaml << EOL
 kind: Service
@@ -157,6 +157,29 @@ EOL
 kubectl apply -f frontend.deploy.yaml
 
 
+#Create PersistentVolume
+
+cat > ./mongo.PersistentVolume.yaml << EOL
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb
+  labels:
+    type: local
+spec:
+  storageClassName: default
+  capacity:
+    storage: 500M
+  accessModes:
+    - ReadWriteOnce #type of access
+  hostPath:
+    path: "/mnt/data" #host location
+EOL
+
+
+kubectl apply -f mongo.PersistentVolume.yaml
+
+
 #Create Mongodb statefull
 
 cat > ./mongo.stateful.yaml << EOL
@@ -194,3 +217,4 @@ spec:
             storage: 500M
 EOL
 
+kubectl apply -f mongo.stateful.yaml
