@@ -3,6 +3,8 @@
 
 ResourceGroup="WoodKube"
 
+#Start Nodes
+
 NODE="kubemaster01"
 az vm start \
     --resource-group $ResourceGroup \
@@ -22,3 +24,10 @@ az vm start \
     --resource-group $ResourceGroup \
     --name $NODE \
 
+
+#Show IP Master
+
+az network public-ip show \
+    --resource-group $ResourceGroup \
+    --name ${NODE}Pip \
+    --query "ipAddress" -otsv
