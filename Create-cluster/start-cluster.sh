@@ -27,6 +27,7 @@ az vm start \
 
 #Show IP Master
 
+NODE="Master"
 az network public-ip show \
     --resource-group $ResourceGroup \
     --name ${NODE}Pip \
