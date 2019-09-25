@@ -1,0 +1,24 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend-pod
+        image: woodregistry.azurecr.io/smilr/frontend
+        ports:
+        - containerPort: 3000
+        env:
+        - name: API_ENDPOINT
+          value: http://51.145.158.202/api
+      imagePullSecrets:
+      - name: acr-auth
